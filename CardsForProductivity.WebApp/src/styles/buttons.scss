@@ -1,0 +1,95 @@
+@import "./styles/colors.scss";
+@import "./styles/dimensions.scss";
+
+$btn-disabled-amount: 24;
+$btn-action-amount: 4;
+
+.cfp-btn {
+    color: $light-color;
+    background-color: $dark-color;
+
+    border: none;
+    border-radius: $standard-border-radius;
+    
+    padding: $input-padding;
+    height: 2.5rem;
+    
+    font-weight: bold;
+    font-size: $standard-font-size;
+
+    &:focus {
+        outline: none;
+    }
+
+    &.cfp-btn-block {
+        display: block;
+        border-radius: 0;
+        padding: 0 $standard-spacing;
+    }
+
+    &.cfp-btn-icon {
+        background-color: transparent;
+        color: $dark-color;
+
+        padding: 0;    
+        width: 2rem;
+        height: 2rem;
+
+        border-radius: 2rem;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &.cfp-btn-outline {
+        border: solid 1px $light-color;
+    }
+
+    &:disabled {
+        background-color: lighten($color: $dark-color, $amount: $btn-disabled-amount);
+    }
+
+    &.cfp-btn-secondary {
+        color: $dark-color;
+        background-color: $light-color;
+        border: solid $border-width $dark-color;
+    }
+
+    &.cfp-btn-blue {
+        background-color: $blue-color;
+
+        &:hover {
+            background-color: lighten($color: $blue-color, $amount: $btn-action-amount);
+        }
+
+        &:disabled {
+            background-color: desaturate($color: $blue-color, $amount: 100%);
+        }
+    }
+
+    &.cfp-btn-green {
+        background-color: $green-color;
+
+        &:hover {
+            background-color: lighten($color: $green-color, $amount: $btn-action-amount);
+        }
+
+        &:disabled {
+            background-color: desaturate($color: $green-color, $amount: 100%);
+        }
+    }
+
+    &.cfp-btn-red {
+        background-color: $red-color;
+
+        &:hover {
+            background-color: lighten($color: $red-color, $amount: $btn-action-amount);
+        }
+
+        &:disabled {
+            background-color: desaturate($color: $red-color, $amount: 100%);
+        }
+    }
+
+}

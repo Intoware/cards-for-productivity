@@ -1,0 +1,109 @@
+<div class="d-flex w-100 h-100">
+    <div class="w-100 h-100">
+        <div class="grid-container w-100 h-100 text-white">
+            <div class="header h-100 d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">Cards For Productivity</h3>
+
+                <div *ngIf="this.currentSession.isHost">
+                    <button matRipple *ngIf="loadedSession" type="button" class="cfp-btn cfp-btn-outline mr-2" (click)="previousStory()"
+                        [disabled]="currentStory.storyId === currentSession.stories[0].storyId">
+                        <span>Previous</span>
+                    </button>
+
+                    <button matRipple *ngIf="loadedSession" type="button" class="cfp-btn cfp-btn-outline mr-4" (click)="nextStory()"
+                        [disabled]="currentStory.storyId === currentSession.stories[currentSession.stories.length - 1].storyId">
+                        <span>Next</span>
+                    </button>
+
+
+                    <button matRipple *ngIf="loadedSession" type="button" class="cfp-btn cfp-btn-green mr-4" (click)="revealCurrentStoryClicked()"
+                        [disabled]="currentStory.revealed || !confirmedPointsForCurrentStory">
+                        <span>Reveal</span>
+                    </button>
+
+                    <button matRipple type="button" class="cfp-btn cfp-btn-red" disabled>
+                        <span>End</span>
+                    </button>
+                </div>
+
+                <div *ngIf="!this.currentSession.isHost">
+                    <button matRipple type="button" class="cfp-btn cfp-btn-red" (click)="leaveSession()">
+                        <span>Leave</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="story w-100 d-flex justify-content-center">
+                <div *ngIf="loadedSession" class="story-details w-75 mt-2">
+                    <h1 class="mb-2 text-center">{{currentStory.title}}</h1>
+                    <div class="text-center">{{currentStory.description}}</div>
+                    <div *ngIf="currentStory.revealed" class="d-flex flex-row justify-content-between mt-2">
+                        <div class="d-flex flex-column align-items-center">
+                            <h2>{{getSummary().minimum}}</h2>
+                            <div>Minumum</div>
+                        </div>
+
+                        <div class="d-flex flex-column align-items-center">
+                            <h2>{{getSummary().average}}</h2>
+                            <div>Average</div>
+                        </div>
+
+                        <div class="d-flex flex-column align-items-center">
+                            <h2>{{getSummary().maximum}}</h2>
+                            <div>Maxiumum</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="!loadedSession" class="w-100 h-100 d-flex justify-content-center align-items-center">
+                    <span class="spinner-border spinner-border-lg" role="status"></span>
+                </div>
+            </div>
+
+            <div class="content w-100">
+                <div *ngIf="loadedSession && !confirmedPointsForCurrentStory && !currentStory.revealed" class="points-container h-100 d-flex flex-column">
+                    <div class="w-100 vh-100 d-flex flex-wrap justify-content-center align-items-center mb-4">
+                        <div *ngFor="let pointChoice of currentSession.pointChoices;"
+                            class="d-flex flex-column align-items-center">
+                            <app-card-item width="71px" height="100px" class="card-point-choice" [showFront]="true"
+                                [clickable]="'true'"
+                                [frontBackgroundColor]="selectedPointsForCurrentStory === pointChoice ? 'rgb(234, 244, 251)' : 'white'"
+                                [frontContent]="pointChoice" frontFontSize="2rem" (click)="pointsSelected(pointChoice)">
+                            </app-card-item>
+                        </div>
+                    </div>
+
+                    <div [style.visibility]="hasSelectedPointsForCurrentStory ? 'visible' : 'hidden'"
+                        class="d-flex justify-content-center">
+                        <button matRipple type="button" (click)="confirmSelection()" class="cfp-btn cfp-btn-blue px-3">
+                            Confirm Selection
+                        </button>
+                    </div>
+                </div>
+
+                <div *ngIf="loadedSession && (confirmedPointsForCurrentStory || currentStory.revealed)"
+                    class="w-100 h-100">
+                    <div
+                        class="card-container standard-shadow w-100 h-100 d-flex justify-content-center align-items-center">
+                        <div *ngFor="let user of currentSession.users; let i = index;"
+                            class="card-user d-flex flex-column align-items-center">
+                            <app-card-item width="125px" height="175px" [showFront]="currentStory.revealed"
+                                frontBackgroundColor="white" [frontContent]="getSelectionForUser(user.userId) || 'N/A'"
+                                [frontBorder]="'solid 3px ' + cardColors[i % cardColors.length]" frontFontSize="3rem"
+                                [backBackgroundColor]="cardColors[i % cardColors.length]"
+                                [backContent]="getSelectionForUser(user.userId) ? tickIcon : pendingIcon"
+                                backColor="white" backFontSize="3rem">
+                            </app-card-item>
+
+                            <span class="mt-3">{{user.nickname}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="!loadedSession" class="w-100 h-100 d-flex justify-content-center align-items-center">
+                    <span class="spinner-border spinner-border-lg" role="status"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

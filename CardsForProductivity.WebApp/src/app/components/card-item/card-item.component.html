@@ -1,0 +1,13 @@
+<div class="flip-card flip-card-inner" [style.width]="width" [style.height]="height">
+    <div class="flip-card-inner standard-shadow" [class.is-flipped]="!showFront">
+        <div matRipple [matRippleDisabled]="!clickable" class="flip-card-inner-face flip-card-inner-face-front" [style.color]="frontColor"
+            [style.background-color]="frontBackgroundColor" [style.border]="frontBorder" [innerHTML]="frontContent"
+            [style.font-size]="frontFontSize">
+        </div>
+
+        <div matRipple [matRippleDisabled]="!clickable" class="flip-card-inner-face flip-card-inner-face-back" [style.color]="backColor"
+            [style.background-color]="backBackgroundColor" [style.border]="backBorder" [innerHTML]="backContent"
+            [style.font-size]="backFontSize">
+        </div>
+    </div>
+</div>

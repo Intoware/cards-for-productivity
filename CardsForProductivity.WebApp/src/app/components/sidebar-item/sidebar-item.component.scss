@@ -1,0 +1,57 @@
+@import "../../../styles/colors.scss";
+@import "../../../styles/dimensions.scss";
+
+.sidebar-item-card {
+    background-color: $dark-color;
+
+    cursor: pointer;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 0 $standard-spacing;
+    grid-template-areas: ". card" "actions card";
+
+    margin: -$standard-spacing;
+    padding: $standard-spacing;
+
+    &.selected {
+        background-color: $selected-color;
+    }
+}
+
+.sidebar-item-card {
+    grid-area: card;
+
+    background-color: $dark-color;
+
+    font-weight: bolder;
+    font-size: $standard-font-size;
+    line-height: 1.2rem;
+
+    padding: $standard-spacing;
+
+    border-radius: $standard-border-radius;
+
+    width: 200px;
+    height: 200px;
+}
+
+.sidebar-item-actions {
+    grid-area: actions;
+}
+
+.warning {
+    color: $warning-color;
+    font-size: 4rem;
+}
+
+.fade-end {
+    display: -webkit-box;
+    -webkit-line-clamp: 9;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 10.6rem;
+}

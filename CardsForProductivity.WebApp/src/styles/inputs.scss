@@ -1,0 +1,39 @@
+@import "./styles/colors.scss";
+@import "./styles/dimensions.scss";
+
+.cfp-form-control {
+    display: block;
+    width: 100%;
+    padding: $input-padding;
+    font-weight: bold;
+    text-align: center;
+    border: solid $border-width $placeholder-color;
+
+    &::placeholder {
+        color: $placeholder-color;
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    &.large {
+        font-size: 2rem;
+        font-weight: unset;
+    }
+
+    &.no-border {
+        border: none;
+    }
+
+    &.fill {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.input-box {
+    width: 100%;
+    background-color: white;
+    padding: $large-spacing;
+}

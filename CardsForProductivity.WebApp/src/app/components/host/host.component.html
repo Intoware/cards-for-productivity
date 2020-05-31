@@ -1,0 +1,71 @@
+<div class="d-flex h-100 align-items-center justify-content-center text-white">
+    <div *ngIf="!userSetHostInformation">
+        <div class="row mb-2">
+            <div class="col">
+                <h1>
+                    Cards<br />
+                    For<br />
+                    Productivity<br />
+                </h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <input type="text" class="cfp-form-control mb-1" placeholder="Your name" aria-label="Your name"
+                    [(ngModel)]="createSessionRequest.nickname"
+                    (keyup.enter)="createSessionRequest.nickname ? hostInformationEntered() : null">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <button matRipple type="button" (click)="hostInformationEntered()" class="cfp-btn cfp-btn-block w-100"
+                    [disabled]="!createSessionRequest.nickname">
+                    Enter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="userSetHostInformation" class="w-100 h-100">
+        <div class="grid-container w-100 h-100">
+            <div class="header d-flex flex-row justify-content-between align-items-center">
+                <h3 class="mb-0">Cards For Productivity</h3>
+
+                <button matRipple type="button" (click)="createSession()" class="cfp-btn cfp-btn-green px-3"
+                    [disabled]="isLoading || !createSessionRequestValid()">
+                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status"
+                        aria-hidden="true"></span>
+                    <span *ngIf="!isLoading">Launch</span>
+                </button>
+            </div>
+
+            <div class="sidebar standard-shadow">
+                <div *ngFor="let story of createSessionRequest.stories">
+                    <app-sidebar-item class="selected" [story]="story" (delete)="deleteStory($event)"
+                        (clone)="cloneStory($event)" (selected)="storySelected($event)">
+                    </app-sidebar-item>
+                </div>
+
+                <button matRipple type="button" (click)="addStory()" class="cfp-btn cfp-btn-blue w-100">
+                    Add Story
+                </button>
+            </div>
+
+            <div class="content">
+                <div class="input-box standard-shadow mb-5">
+                    <input type="text" autofocus class="cfp-form-control large no-border fill fs-"
+                        placeholder="Click to add the title of your story" aria-label="Story title"
+                        [(ngModel)]="currentStory.title">
+                </div>
+
+                <div class="input-box standard-shadow">
+                    <input type="text" autofocus class="cfp-form-control large no-border fill"
+                        placeholder="Click to add the description of your story" aria-label="Story description"
+                        [(ngModel)]="currentStory.description">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+@import "../../../styles/colors.scss";
+@import "../../../styles/dimensions.scss";
+@import "../../../styles/shadows.scss";
+
+.grid-container {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "header header" "sidebar content";
+}
+
+.header {
+    grid-area: header;
+
+    background-color: $dark-color;
+
+    padding: $standard-spacing;
+
+    z-index: 2;
+}
+
+.sidebar {
+    grid-area: sidebar;
+
+    background-color: $white-color;
+    color: $dark-color;
+
+    padding: $standard-spacing;
+
+    z-index: 1;
+
+    overflow-y: scroll;
+
+    min-width: 16.875rem;
+}
+
+.content {
+    grid-area: content;
+
+    background-color: $light-color;
+    color: $dark-color;
+
+    padding: $large-spacing;
+}
+
+.selected {
+    background-color: $selected-color;
+}

@@ -1,0 +1,36 @@
+@import "../../../styles/dimensions.scss";
+
+.flip-card {
+    perspective: 1000px;
+}
+
+.flip-card-inner {
+    width: 100%;
+    height: 100%;
+    transition: transform 1s;
+    transform-style: preserve-3d;
+    position: relative;
+    border-radius: $standard-border-radius;
+}
+
+.flip-card-inner.is-flipped {
+    transform: rotateY(180deg);
+}
+
+.flip-card-inner-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: $standard-border-radius;
+}
+
+.flip-card-inner-face-back {
+    transform: rotateY(180deg);
+}

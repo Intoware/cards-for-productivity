@@ -1,0 +1,79 @@
+@import "../../../styles/colors.scss";
+@import "../../../styles/dimensions.scss";
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas: "header" "story" "content";
+}
+
+.header {
+    grid-area: header;
+
+    background-color: $dark-color;
+
+    padding: $standard-spacing;
+
+    z-index: 2;
+
+    .cfp-btn {
+        min-width: 6rem;
+    }
+}
+
+.story {
+    grid-area: story;
+
+    background-color: $dark-color;
+
+    padding: $large-spacing;
+
+    z-index: 2;
+
+    border-top: solid 1px $light-color;
+}
+
+.content {
+    grid-area: content;
+
+    background-color: $light-color;
+    color: $dark-color;
+
+    padding: $large-spacing;
+    
+    overflow-y: hidden;
+}
+
+.bottom-bar {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card-container {
+    background-color: $white-color;
+
+    padding: $large-spacing;
+
+    flex-wrap: wrap;
+
+    border-radius: $standard-border-radius;
+
+    overflow-y: scroll;
+}
+
+.points-container {
+    overflow-y: scroll;
+}
+
+.card-user {
+    margin: $large-spacing;
+}
+
+.card-point-choice {
+    margin: $standard-spacing;
+
+    cursor: pointer;
+
+    border-radius: $standard-border-radius;
+}

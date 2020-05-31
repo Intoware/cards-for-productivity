@@ -1,0 +1,6 @@
+$standard-shadow-width: 1rem;
+$standard-shadow-color: rgba(0, 0, 0, 0.15);
+
+.standard-shadow {
+ box-shadow: 0 0 $standard-shadow-width 0 $standard-shadow-color;
+}

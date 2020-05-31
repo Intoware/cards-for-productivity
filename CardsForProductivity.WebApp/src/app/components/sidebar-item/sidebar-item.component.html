@@ -1,0 +1,22 @@
+<div class="grid-container mb-3" [class.selected]="story.isSelected">
+    <div matRipple class="sidebar-item-card text-white" (click)="selected.emit(story)">
+        <div *ngIf="story.title.trim() && !story.isDuplicate" class="fade-end">
+            {{story.title}}
+        </div>
+        
+        <div *ngIf="!story.title.trim() || story.isDuplicate" class="w-100 h-100 d-flex justify-content-center align-items-center">
+            <i class="fas fa-exclamation-triangle warning"></i>
+        </div>
+    </div>
+    <div class="sidebar-item-actions">
+        <div class="d-flex flex-column justify-content-flex-end w-100 h-100">
+            <button matRipple type="button" (click)="clone.emit(story)" class="cfp-btn cfp-btn-icon" [disabled]="cloneDisabled">
+                <i class="fas fa-clone"></i>
+            </button>
+
+            <button matRipple type="button" (click)="delete.emit(story)" class="cfp-btn cfp-btn-icon" [disabled]="deleteDisabled">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+    </div>
+</div>

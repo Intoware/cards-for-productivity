@@ -1,0 +1,31 @@
+<div class="grid-container vw-100 vh-100">
+    <div class="banner d-flex flex-row justify-content-center" [class.hidden]="!hostedSession">
+        <span class="light">Join at&nbsp;</span>www.cardsforproductivity.com<span class="light">&nbsp;with Session PIN:&nbsp;</span>{{sessionCode}}
+    </div>
+
+    <div class="header d-flex flex-row justify-content-between align-items-center">
+        <div class="d-flex flex-column align-items-center header-item">
+            <h2>{{users.length}}</h2>
+            <div *ngIf="users.length === 1">User</div>
+            <div *ngIf="users.length !== 1">Users</div>
+        </div>
+        <h1>Cards For Productivity</h1>
+        <button matRipple type="button" class="cfp-btn cfp-btn-block header-item" [class.hidden]="!hostedSession" (click)="startSessionClicked()">
+            Go Team!
+        </button>
+    </div>
+
+    <div></div>
+
+    <div class="content">
+        <li class="unmarked">
+            <ul *ngFor="let user of users">
+                {{user.nickname}}
+                <span *ngIf="user.isHost">&nbsp;(host)</span>
+                <span *ngIf="!user.isOnline">&nbsp;<i class="fas fa-exclamation-triangle"></i></span>
+            </ul>
+        </li>
+    </div>
+
+    <div></div>
+</div>

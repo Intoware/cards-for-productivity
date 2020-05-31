@@ -1,0 +1,63 @@
+@import "../../../styles/colors.scss";
+@import "../../../styles/dimensions.scss";
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: min-content min-content 1fr;
+    grid-template-areas: "banner banner banner" "header header header" ". content .";
+}
+
+.banner {
+    grid-area: banner;
+
+    background-color: $white-color;
+
+    padding: $standard-spacing;
+
+    font-size: $large-font-size;
+}
+
+.header {
+    grid-area: header;
+
+    padding: $standard-spacing;
+
+    color: $light-color;
+
+    >.header-item {
+        min-width: 6rem;
+    }
+
+    &.hidden {
+        height: 0;
+        margin-bottom: -$large-spacing;
+    }
+}
+
+.content {
+    padding: $large-spacing;
+
+    color: $light-color;
+
+    font-size: $large-font-size;
+
+    li {
+        columns: 2;
+        text-align: center;
+
+        >ul {
+            padding: 0;
+        }
+    }
+}
+
+li {
+    &.unmarked {
+        list-style: none;
+    }
+}
+
+.hidden {
+    visibility: hidden;
+}
