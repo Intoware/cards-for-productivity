@@ -10,4 +10,5 @@ export interface JoinSessionResponse {
     users: UserModel[];
     pointChoices: string[];
     hasStarted: boolean;
+    hasFinished: boolean;
 }

@@ -21,7 +21,7 @@
                         <span>Reveal</span>
                     </button>
 
-                    <button matRipple type="button" class="cfp-btn cfp-btn-red" disabled>
+                    <button matRipple type="button" class="cfp-btn cfp-btn-red" (click)="endSessionClicked()">
                         <span>End</span>
                     </button>
                 </div>
@@ -35,7 +35,7 @@
 
             <div class="story w-100 d-flex justify-content-center">
                 <div *ngIf="loadedSession" class="story-details w-75 mt-2">
-                    <h1 class="mb-2 text-center">{{currentStory.title}}</h1>
+                    <h1 class="mb-4 text-center">{{currentStory.title}}</h1>
                     <div class="text-center">{{currentStory.description}}</div>
                     <div *ngIf="currentStory.revealed" class="d-flex flex-row justify-content-between mt-2">
                         <div class="d-flex flex-column align-items-center">
@@ -45,7 +45,7 @@
 
                         <div class="d-flex flex-column align-items-center">
                             <h2>{{getSummary().average}}</h2>
-                            <div>Average</div>
+                            <div>Most Selected</div>
                         </div>
 
                         <div class="d-flex flex-column align-items-center">

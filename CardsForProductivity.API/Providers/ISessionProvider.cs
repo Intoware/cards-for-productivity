@@ -26,6 +26,8 @@ namespace CardsForProductivity.API.Providers
         
         Task StartSessionAsync(string sessionId, string hostCode, CancellationToken cancellationToken);
 
+        Task EndSessionAsync(string sessionId, string hostCode, CancellationToken cancellationToken);
+
         Task ChangeCurrentStoryAsync(string sessionId, string hostCode, string storyId, CancellationToken cancellationToken);
     }
 }

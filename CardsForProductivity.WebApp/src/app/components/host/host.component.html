@@ -1,6 +1,6 @@
 <div class="d-flex h-100 align-items-center justify-content-center text-white">
     <div *ngIf="!userSetHostInformation">
-        <div class="row mb-2">
+        <div class="row mb-3">
             <div class="col">
                 <h1>
                     Cards<br />
@@ -10,18 +10,18 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mb-1">
             <div class="col">
-                <input type="text" class="cfp-form-control mb-1" placeholder="Your name" aria-label="Your name"
-                    [(ngModel)]="createSessionRequest.nickname"
+                <input type="text" class="cfp-form-control" placeholder="Your name" aria-label="Your name"
+                    [(ngModel)]="createSessionRequest.nickname" size="1" autofocus
                     (keyup.enter)="createSessionRequest.nickname ? hostInformationEntered() : null">
             </div>
         </div>
 
         <div class="row">
             <div class="col">
-                <button matRipple type="button" (click)="hostInformationEntered()" class="cfp-btn cfp-btn-block w-100"
-                    [disabled]="!createSessionRequest.nickname">
+                <button matRipple type="button" class="cfp-btn cfp-btn-block w-100"
+                    [disabled]="!createSessionRequest.nickname" size="1" (click)="hostInformationEntered()">
                     Enter
                 </button>
             </div>

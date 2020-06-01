@@ -39,7 +39,7 @@ export class JoinComponent implements OnInit {
       this.sessionService.setJoinVariables(this.joinSessionRequest, response);
       this.isLoading = false;
 
-      if (response.hasStarted) {
+      if (response.hasStarted && !response.hasFinished) {
         this.navigateTo('session');
       } else {
         this.navigateTo('lobby');

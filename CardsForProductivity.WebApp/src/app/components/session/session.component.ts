@@ -20,7 +20,7 @@ export class SessionComponent implements OnInit {
   hostedSession: HostedSession;
 
   sessionHubConnection: signalR.HubConnection;
-  hubListners: HubListener[] = [];
+  hubListeners: HubListener[] = [];
 
   cardColors = [
     '#00CEAD', '#00D254', '#0097E7',
@@ -115,6 +115,12 @@ export class SessionComponent implements OnInit {
       average: this.getAverageSelection(),
       maximum: this.getMaximumSelection()
     };
+  }
+
+  endSessionClicked() {
+    this.sessionHubConnection.invoke('EndSession', this.currentSession.sessionId, this.hostedSession.hostCode).then(null, err => {
+      console.error(`[SessionHub] Error ending session: ${err}`);
+    });
   }
 
   private navigateTo(path: string) {
@@ -221,23 +227,30 @@ export class SessionComponent implements OnInit {
     this.currentStory = this.currentSession.stories.filter((s) => s.storyId === this.currentSession.currentStoryId)[0];
   }
 
-  private registerListeners() {
-    this.hubListners.push({ name: 'GetSessionState', newMethod: (state) => { this.getSessionState(state); } });
-    this.hubListners.push({ name: 'UserList', newMethod: (users) => { this.userList(users); } });
-    this.hubListners.push({ name: 'UserConnected', newMethod: (user) => { this.userConnected(user); } });
-    this.hubListners.push({ name: 'UserLeft', newMethod: (user) => { this.userLeft(user); } });
-    this.hubListners.push({ name: 'UserDisconnected', newMethod: (user) => { this.userDisconnected(user); } });
-    this.hubListners.push({ name: 'MakePointSelection', newMethod: (story) => { this.makePointSelection(story); } });
-    this.hubListners.push({ name: 'RevealCurrentStory', newMethod: () => { this.revealCurrentStory(); } });
-    this.hubListners.push({ name: 'CurrentStoryChanged', newMethod: (storyId) => { this.currentStoryChanged(storyId); } });
+  private endSession() {
+    this.unregisterListeners();
+    this.sessionHubConnection.stop();
+    this.navigateTo('');
+  }
 
-    for (const listener of this.hubListners) {
+  private registerListeners() {
+    this.hubListeners.push({ name: 'GetSessionState', newMethod: (state) => { this.getSessionState(state); } });
+    this.hubListeners.push({ name: 'UserList', newMethod: (users) => { this.userList(users); } });
+    this.hubListeners.push({ name: 'UserConnected', newMethod: (user) => { this.userConnected(user); } });
+    this.hubListeners.push({ name: 'UserLeft', newMethod: (user) => { this.userLeft(user); } });
+    this.hubListeners.push({ name: 'UserDisconnected', newMethod: (user) => { this.userDisconnected(user); } });
+    this.hubListeners.push({ name: 'MakePointSelection', newMethod: (story) => { this.makePointSelection(story); } });
+    this.hubListeners.push({ name: 'RevealCurrentStory', newMethod: () => { this.revealCurrentStory(); } });
+    this.hubListeners.push({ name: 'CurrentStoryChanged', newMethod: (storyId) => { this.currentStoryChanged(storyId); } });
+    this.hubListeners.push({ name: 'EndSession', newMethod: () => { this.endSession(); } });
+
+    for (const listener of this.hubListeners) {
       this.sessionHubConnection.on(listener.name, listener.newMethod);
     }
   }
 
   private unregisterListeners() {
-    for (const listener of this.hubListners) {
+    for (const listener of this.hubListeners) {
       this.sessionHubConnection.off(listener.name);
     }
   }
@@ -266,7 +279,7 @@ export class SessionComponent implements OnInit {
     const currentStory = this.currentStory;
 
     let maxNumberOfOccurrences = -1;
-    let pointsWithHighestOccurrences = '';
+    let pointsWithHighestOccurrences = [];
 
     for (const key in currentStory.userPoints) {
       if (key) {
@@ -282,13 +295,27 @@ export class SessionComponent implements OnInit {
         const selectionFrequency = selectionRecord[selection];
 
         if (maxNumberOfOccurrences === -1 || maxNumberOfOccurrences < selectionFrequency) {
-          pointsWithHighestOccurrences = selection;
+          pointsWithHighestOccurrences = [selection];
           maxNumberOfOccurrences = selectionFrequency;
+        } else if (maxNumberOfOccurrences === selectionFrequency) {
+          pointsWithHighestOccurrences[pointsWithHighestOccurrences.length] = selection;
         }
       }
     }
 
-    return pointsWithHighestOccurrences;
+    const sortedPoints = [];
+
+    for (const i in this.currentSession.pointChoices) {
+      if (i) {
+        const currentPointChoice = this.currentSession.pointChoices[i];
+
+        if (pointsWithHighestOccurrences.indexOf(currentPointChoice) !== -1) {
+          sortedPoints[sortedPoints.length] = currentPointChoice;
+        }
+      }
+    }
+
+    return sortedPoints.join(', ');
   }
 
   private getMaximumSelection(): string {

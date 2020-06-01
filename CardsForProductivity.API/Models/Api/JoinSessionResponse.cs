@@ -20,5 +20,7 @@ namespace CardsForProductivity.API.Models.Api
         public IEnumerable<string> PointChoices { get; set; }
 
         public bool HasStarted { get; set; }
+
+        public bool HasFinished { get; set; }
     }
 }

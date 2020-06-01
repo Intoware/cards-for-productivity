@@ -99,6 +99,17 @@ namespace CardsForProductivity.API.Hubs
             await Clients.Group(sessionId).SendAsync("RevealCurrentStory", sessionId);
         }
 
+        [HubMethodName("EndSession")]
+        public async Task EndSessionAsync(string sessionId, string hostCode)
+        {
+            if (!await _sessionProvider.CheckSessionForHostAsync(sessionId, hostCode, default))
+            {
+                return;
+            }
+
+            await Clients.Group(sessionId).SendAsync("EndSession", sessionId);
+        }
+
         [HubMethodName("GetSessionState")]
         public async Task GetSessionStateAsync(ClientRequestDetails clientRequestDetails)
         {
@@ -121,6 +132,7 @@ namespace CardsForProductivity.API.Hubs
                 Users = users,
                 PointChoices = session.PointChoices,
                 HasStarted = session.HasStarted,
+                HasFinished = session.HasFinished,
                 CurrentStoryId = session.CurrentStoryId
             };
 

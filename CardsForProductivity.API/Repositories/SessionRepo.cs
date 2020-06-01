@@ -61,6 +61,16 @@ namespace CardsForProductivity.API.Repositories
             return _sessionCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
         }
 
+        public Task SetSessionFinishedAsync(string sessionId, CancellationToken cancellationToken)
+        {
+            _ = sessionId ?? throw new ArgumentNullException(nameof(sessionId));
+
+            var filter = Builders<SessionModel>.Filter.Eq(i => i.SessionId, sessionId);
+            var update = Builders<SessionModel>.Update.Set(i => i.HasFinished, true);
+
+            return _sessionCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+        }
+
         public Task SetCurrentStoryAsync(string sessionId, string storyId, CancellationToken cancellationToken)
         {
             _ = sessionId ?? throw new ArgumentNullException(nameof(sessionId));

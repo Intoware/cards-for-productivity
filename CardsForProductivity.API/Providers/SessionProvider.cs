@@ -128,7 +128,8 @@ namespace CardsForProductivity.API.Providers
                 Stories = stories,
                 Users = users,
                 PointChoices = session.PointChoices,
-                HasStarted = session.HasStarted
+                HasStarted = session.HasStarted,
+                HasFinished = session.HasFinished
             };
         }
 
@@ -216,6 +217,16 @@ namespace CardsForProductivity.API.Providers
             await _sessionRepo.SetCurrentStoryAsync(sessionId, stories.First().StoryId, cancellationToken);
 
             await _sessionRepo.SetSessionStartedAsync(sessionId, cancellationToken);
+        }
+
+        public async Task EndSessionAsync(string sessionId, string hostCode, CancellationToken cancellationToken)
+        {
+            if (!await CheckSessionForHostAsync(sessionId, hostCode, cancellationToken))
+            {
+                return;
+            }
+
+            await _sessionRepo.SetSessionFinishedAsync(sessionId, cancellationToken);
         }
 
         public async Task ChangeCurrentStoryAsync(string sessionId, string hostCode, string storyId, CancellationToken cancellationToken)

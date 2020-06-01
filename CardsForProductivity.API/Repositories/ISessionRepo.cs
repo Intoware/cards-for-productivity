@@ -16,6 +16,8 @@ namespace CardsForProductivity.API.Repositories
 
         Task SetSessionStartedAsync(string sessionId, CancellationToken cancellationToken);
 
+        Task SetSessionFinishedAsync(string sessionId, CancellationToken cancellationToken);
+
         Task SetCurrentStoryAsync(string sessionId, string storyId, CancellationToken cancellationToken);
     }
 }

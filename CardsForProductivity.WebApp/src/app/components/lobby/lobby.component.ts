@@ -27,7 +27,7 @@ export class LobbyComponent implements OnInit {
   isLoading: boolean;
 
   sessionHubConnection: signalR.HubConnection;
-  hubListners: HubListener[] = [];
+  hubListeners: HubListener[] = [];
 
   constructor(private router: Router,
               private sessionService: SessionService) { }
@@ -57,10 +57,8 @@ export class LobbyComponent implements OnInit {
   }
 
   startSessionClicked() {
-    this.sessionHubConnection.invoke('StartSession', this.sessionId, this.hostedSession.hostCode).then(() => {
-      console.log('[SessionHub] Started session');
-    }, err => {
-      console.error(`[SessionHub] Error subscribing to SessionHub: ${err}`);
+    this.sessionHubConnection.invoke('StartSession', this.sessionId, this.hostedSession.hostCode).then(null, err => {
+      console.error(`[SessionHub] Error starting session: ${err}`);
     });
   }
 
@@ -129,19 +127,19 @@ export class LobbyComponent implements OnInit {
   }
 
   private registerListeners() {
-    this.hubListners.push({ name: 'StartSession', newMethod: () => { this.startSession(); } });
-    this.hubListners.push({ name: 'UserList', newMethod: (users) => { this.userList(users); } });
-    this.hubListners.push({ name: 'UserConnected', newMethod: (user) => { this.userConnected(user); } });
-    this.hubListners.push({ name: 'UserLeft', newMethod: (user) => { this.userLeft(user); } });
-    this.hubListners.push({ name: 'UserDisconnected', newMethod: (user) => { this.userDisconnected(user); } });
+    this.hubListeners.push({ name: 'StartSession', newMethod: () => { this.startSession(); } });
+    this.hubListeners.push({ name: 'UserList', newMethod: (users) => { this.userList(users); } });
+    this.hubListeners.push({ name: 'UserConnected', newMethod: (user) => { this.userConnected(user); } });
+    this.hubListeners.push({ name: 'UserLeft', newMethod: (user) => { this.userLeft(user); } });
+    this.hubListeners.push({ name: 'UserDisconnected', newMethod: (user) => { this.userDisconnected(user); } });
 
-    for (const listener of this.hubListners) {
+    for (const listener of this.hubListeners) {
       this.sessionHubConnection.on(listener.name, listener.newMethod);
     }
   }
 
   private unregisterListeners() {
-    for (const listener of this.hubListners) {
+    for (const listener of this.hubListeners) {
       this.sessionHubConnection.off(listener.name, listener.newMethod);
     }
   }

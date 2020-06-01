@@ -21,6 +21,8 @@ namespace CardsForProductivity.API.Models.Api
 
         public bool HasStarted { get; set; }
 
+        public bool HasFinished { get; set; }
+
         public string CurrentStoryId { get; set; }
     }
 }

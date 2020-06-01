@@ -9,6 +9,7 @@ export interface SessionStateResponse {
     stories: StoryModel[];
     users: UserModel[];
     pointChoices: string[];
-    hasStarted: string;
+    hasStarted: boolean;
+    hasFinished: boolean;
     currentStoryId: string;
 }
