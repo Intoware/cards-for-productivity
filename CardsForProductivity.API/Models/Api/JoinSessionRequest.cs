@@ -4,7 +4,6 @@ namespace CardsForProductivity.API.Models.Api
 {
     public class JoinSessionRequest
     {
-        [Required]
         public string SessionId { get; set; }
 
         [Required]
