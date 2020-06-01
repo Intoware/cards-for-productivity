@@ -36,9 +36,9 @@
 
         <div class="story">
             <div *ngIf="loadedSession" class="story-details w-75 mt-2">
-                <h1 class="mb-4 text-center">{{currentStory.title}}</h1>
+                <h1 class="text-center">{{currentStory.title}}</h1>
                 <div class="text-center">{{currentStory.description}}</div>
-                <div *ngIf="currentStory.revealed" class="summary mt-2">
+                <div *ngIf="currentStory.revealed" class="summary mt-4">
                     <div class="summary-item">
                         <h2>{{getSummary().minimum}}</h2>
                         <div>Minumum</div>
