@@ -1,4 +1,4 @@
-<div class="d-flex h-100 align-items-center justify-content-center text-white">
+<div class="page-container-centered">
     <div *ngIf="!userSetHostInformation">
         <div class="row mb-3">
             <div class="col">
@@ -28,43 +28,41 @@
         </div>
     </div>
 
-    <div *ngIf="userSetHostInformation" class="w-100 h-100">
-        <div class="grid-container w-100 h-100">
-            <div class="header d-flex flex-row justify-content-between align-items-center">
-                <h3 class="mb-0">Cards For Productivity</h3>
+    <div *ngIf="userSetHostInformation" class="grid-container">
+        <div class="header">
+            <h3 class="mb-0">Cards For Productivity</h3>
 
-                <button matRipple type="button" (click)="createSession()" class="cfp-btn cfp-btn-green px-3"
-                    [disabled]="isLoading || !createSessionRequestValid()">
-                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status"
-                        aria-hidden="true"></span>
-                    <span *ngIf="!isLoading">Launch</span>
-                </button>
+            <button matRipple type="button" (click)="createSession()" class="cfp-btn cfp-btn-green px-3"
+                [disabled]="isLoading || !createSessionRequestValid()">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status"
+                    aria-hidden="true"></span>
+                <span *ngIf="!isLoading">Launch</span>
+            </button>
+        </div>
+
+        <div class="sidebar standard-shadow">
+            <div *ngFor="let story of createSessionRequest.stories">
+                <app-sidebar-item class="selected" [story]="story" (delete)="deleteStory($event)"
+                    (clone)="cloneStory($event)" (selected)="storySelected($event)">
+                </app-sidebar-item>
             </div>
 
-            <div class="sidebar standard-shadow">
-                <div *ngFor="let story of createSessionRequest.stories">
-                    <app-sidebar-item class="selected" [story]="story" (delete)="deleteStory($event)"
-                        (clone)="cloneStory($event)" (selected)="storySelected($event)">
-                    </app-sidebar-item>
-                </div>
+            <button matRipple type="button" (click)="addStory()" class="cfp-btn cfp-btn-blue w-100">
+                Add Story
+            </button>
+        </div>
 
-                <button matRipple type="button" (click)="addStory()" class="cfp-btn cfp-btn-blue w-100">
-                    Add Story
-                </button>
+        <div class="content">
+            <div class="input-box standard-shadow mb-5">
+                <input type="text" autofocus class="cfp-form-control large no-border fill fs-"
+                    placeholder="Click to add the title of your story" aria-label="Story title"
+                    [(ngModel)]="currentStory.title">
             </div>
 
-            <div class="content">
-                <div class="input-box standard-shadow mb-5">
-                    <input type="text" autofocus class="cfp-form-control large no-border fill fs-"
-                        placeholder="Click to add the title of your story" aria-label="Story title"
-                        [(ngModel)]="currentStory.title">
-                </div>
-
-                <div class="input-box standard-shadow">
-                    <input type="text" autofocus class="cfp-form-control large no-border fill"
-                        placeholder="Click to add the description of your story" aria-label="Story description"
-                        [(ngModel)]="currentStory.description">
-                </div>
+            <div class="input-box standard-shadow">
+                <input type="text" autofocus class="cfp-form-control large no-border fill"
+                    placeholder="Click to add the description of your story" aria-label="Story description"
+                    [(ngModel)]="currentStory.description">
             </div>
         </div>
     </div>

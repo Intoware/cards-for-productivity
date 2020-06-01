@@ -1,17 +1,18 @@
 @import "~bootstrap/scss/bootstrap";
-@import "./styles/buttons.scss";
-@import "./styles/flex.scss";
-@import "./styles/headings.scss";
-@import "./styles/inputs.scss";
-@import "./styles/shadows.scss";
-@import "./styles/text.scss";
+@import "buttons.scss";
+@import "colors.scss";
+@import "containers.scss";
+@import "dimensions.scss";
+@import "flex.scss";
+@import "headings.scss";
+@import "inputs.scss";
+@import "shadows.scss";
+@import "text.scss";
 
 body {
     margin: 0;
     overflow: hidden;
-}
 
-body {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
     font-weight: bold;
     word-wrap: break-word;

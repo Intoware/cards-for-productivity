@@ -1,11 +1,22 @@
-@import "../../../styles/colors.scss";
-@import "../../../styles/dimensions.scss";
+@import "colors.scss";
+@import "dimensions.scss";
+
+.session-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
 
 .grid-container {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: auto auto 1fr;
     grid-template-areas: "header" "story" "content";
+
+    width: 100%;
+    height: 100%;
+
+    color: $white-color;
 }
 
 .header {
@@ -16,6 +27,10 @@
     padding: $standard-spacing;
 
     z-index: 2;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     .cfp-btn {
         min-width: 6rem;
@@ -32,6 +47,9 @@
     z-index: 2;
 
     border-top: solid 1px $light-color;
+
+    display: flex;
+    justify-content: center;
 }
 
 .content {
@@ -43,6 +61,8 @@
     padding: $large-spacing;
     
     overflow-y: hidden;
+
+    width: 100%;
 }
 
 .bottom-bar {
@@ -60,14 +80,48 @@
     border-radius: $standard-border-radius;
 
     overflow-y: scroll;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+    >.card-user {
+        margin: $large-spacing;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 }
 
 .points-container {
     overflow-y: scroll;
-}
 
-.card-user {
-    margin: $large-spacing;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    >.point-selection {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+
+        >.point-choice {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+
+    >.confirm-selection {
+        display: flex;
+        justify-content: center;
+    }
 }
 
 .card-point-choice {
@@ -76,4 +130,25 @@
     cursor: pointer;
 
     border-radius: $standard-border-radius;
+}
+
+.summary {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    >.summary-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+.loading-container {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
