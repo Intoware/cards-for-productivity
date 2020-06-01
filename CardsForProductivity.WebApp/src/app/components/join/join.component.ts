@@ -49,10 +49,6 @@ export class JoinComponent implements OnInit {
     });
   }
 
-  goBack() {
-    this.router.navigate(['']);
-  }
-
   sessionCodeEntered() {
     this.userSetSessionCode = true;
     setTimeout(() => this.nicknameElement.nativeElement.focus(), 0);

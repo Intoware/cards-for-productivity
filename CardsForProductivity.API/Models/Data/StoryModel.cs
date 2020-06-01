@@ -14,8 +14,10 @@ namespace CardsForProductivity.API.Models.Data
         public string SessionId { get; set; }
         
         [Required]
+        [MaxLength(250)]
         public string Title { get; set; }
 
+        [MaxLength(1000)]
         public string Description { get; set; }
 
         public string AcceptanceCriteria { get; set; }

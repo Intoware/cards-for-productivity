@@ -13,7 +13,7 @@
         <div *ngIf="!userSetSessionCode">
             <div class="row mb-1">
                 <div class="col">
-                    <input type="text" autofocus class="cfp-form-control"
+                    <input type="text" maxlength="4" autofocus class="cfp-form-control"
                         [class.text-uppercase]="joinSessionRequest?.sessionCode.trim()" placeholder="Session PIN"
                         aria-label="Session PIN" size="1" [(ngModel)]="joinSessionRequest.sessionCode"
                         (keyup.enter)="joinSessionRequest.sessionCode ? sessionCodeEntered() : null">
@@ -23,7 +23,7 @@
             <div class="row">
                 <div class="col">
                     <button matRipple type="button" (click)="sessionCodeEntered()" class="cfp-btn cfp-btn-block w-100"
-                        [disabled]="!joinSessionRequest.sessionCode">
+                        [disabled]="!joinSessionRequest?.sessionCode.trim()">
                         Enter
                     </button>
                 </div>
@@ -33,7 +33,7 @@
         <div *ngIf="userSetSessionCode">
             <div class="row mb-1">
                 <div class="col">
-                    <input type="text" #nickname class="cfp-form-control" placeholder="Enter Your Name"
+                    <input type="text" maxlength="20" #nickname class="cfp-form-control" placeholder="Enter Your Name"
                         aria-label="Enter Your Name" size="1" [(ngModel)]="joinSessionRequest.nickname"
                         (keyup.enter)="joinSessionRequest.nickname ? joinSession() : null">
                 </div>
@@ -42,7 +42,7 @@
             <div class="row">
                 <div class="col">
                     <button matRipple type="button" (click)="joinSession()" class="cfp-btn cfp-btn-block w-100"
-                        [disabled]="isLoading || !joinSessionRequest.nickname">
+                        [disabled]="isLoading || !joinSessionRequest.nickname.trim()">
                         <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status"
                             aria-hidden="true"></span>
                         <span *ngIf="!isLoading">OK, Let's Go!</span>
@@ -50,11 +50,5 @@
                 </div>
             </div>
         </div>
-
-        <!-- <div class="row">
-            <div class="col">
-                <button matRipple type="button" (click)="goBack()" class="cfp-btn cfp-btn-block cfp-btn-secondary w-100">Cancel</button>
-            </div>
-        </div> -->
     </div>
 </div>

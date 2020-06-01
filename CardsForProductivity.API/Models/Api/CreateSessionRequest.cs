@@ -11,6 +11,7 @@ namespace CardsForProductivity.API.Models.Api
         public IEnumerable<StoryModel> Stories { get; set; }
 
         [Required]
+        [MaxLength(20)]
         public string Nickname { get; set; }
 
         public IEnumerable<string> PointChoices { get; set; } = new string[] { "0", "½", "1", "2", "3", "5", "8", "13", "20", "40", "100", "∞", "?" };

@@ -12,7 +12,7 @@
 
         <div class="row mb-1">
             <div class="col">
-                <input type="text" class="cfp-form-control" placeholder="Your name" aria-label="Your name"
+                <input type="text" maxlength="20" class="cfp-form-control" placeholder="Your name" aria-label="Your name"
                     [(ngModel)]="createSessionRequest.nickname" size="1" autofocus
                     (keyup.enter)="createSessionRequest.nickname ? hostInformationEntered() : null">
             </div>
@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col">
                 <button matRipple type="button" class="cfp-btn cfp-btn-block w-100"
-                    [disabled]="!createSessionRequest.nickname" size="1" (click)="hostInformationEntered()">
+                    [disabled]="!createSessionRequest.nickname?.trim()" size="1" (click)="hostInformationEntered()">
                     Enter
                 </button>
             </div>
@@ -54,13 +54,13 @@
 
         <div class="content">
             <div class="input-box standard-shadow mb-5">
-                <input type="text" autofocus class="cfp-form-control large no-border fill fs-"
+                <input type="text" maxlength="250" autofocus class="cfp-form-control large no-border fill fs-"
                     placeholder="Click to add the title of your story" aria-label="Story title"
                     [(ngModel)]="currentStory.title">
             </div>
 
             <div class="input-box standard-shadow">
-                <input type="text" autofocus class="cfp-form-control large no-border fill"
+                <input type="text" maxlength="1000" class="cfp-form-control large no-border fill"
                     placeholder="Click to add the description of your story" aria-label="Story description"
                     [(ngModel)]="currentStory.description">
             </div>

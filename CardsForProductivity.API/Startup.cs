@@ -62,7 +62,6 @@ namespace CardsForProductivity.API
             {
                 options.AddPolicy(DefaultPolicyName, policy =>
                 {
-                    // Workaround for allowing any origin with AllowCredentials
                     policy.WithOrigins(Configuration.GetValue<string>("Domain"))
                         .SetPreflightMaxAge(TimeSpan.FromMinutes(60))
                         .AllowAnyHeader()
