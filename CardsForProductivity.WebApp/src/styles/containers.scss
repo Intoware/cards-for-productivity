@@ -1,11 +1,30 @@
 @import "colors.scss";
+@import "dimensions.scss";
 
 .page-container-centered {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 
     height: 100%;
 
     color: $white-color;
+
+    a {
+        color: $dark-color;
+
+        &:hover {
+            color: $dark-color;
+        }
+    }
+
+    >.page-content {
+        margin-top: auto;
+    }
+
+    >.footer {
+        margin-top: auto;
+        margin-bottom: $standard-spacing;
+    }
 }
