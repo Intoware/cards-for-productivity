@@ -17,3 +17,11 @@ body {
     font-weight: bold;
     word-wrap: break-word;
 }
+
+a {
+    color: $dark-color;
+
+    &:hover {
+        color: $dark-color;
+    }
+}

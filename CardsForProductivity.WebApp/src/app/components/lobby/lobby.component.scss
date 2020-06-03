@@ -4,8 +4,11 @@
 .grid-container {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
-    grid-template-rows: min-content min-content 1fr;
-    grid-template-areas: "banner banner banner" "header header header" ". content .";
+    grid-template-rows: min-content min-content 1fr min-content;
+    grid-template-areas: "banner banner banner" 
+                         "header header header" 
+                         ". content ."
+                         ". footer .";
 
     width: 100%;
     height: 100%;
@@ -77,4 +80,14 @@ li {
 
 .hidden {
     visibility: hidden;
+}
+
+.footer {
+    grid-area: footer;
+
+    color: $white-color;
+
+    padding: $standard-spacing;
+
+    text-align: center;
 }

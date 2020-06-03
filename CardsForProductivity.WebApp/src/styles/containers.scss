@@ -11,14 +11,6 @@
 
     color: $white-color;
 
-    a {
-        color: $dark-color;
-
-        &:hover {
-            color: $dark-color;
-        }
-    }
-
     >.page-content {
         margin-top: auto;
     }
