@@ -15,6 +15,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { LobbyComponent } from './components/lobby/lobby.component';
 import { SessionComponent } from './components/session/session.component';
 import { CardItemComponent } from './components/card-item/card-item.component';
+import { GithubCornerComponent } from './components/github-corner/github-corner.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { CardItemComponent } from './components/card-item/card-item.component';
     SidebarItemComponent,
     LobbyComponent,
     SessionComponent,
-    CardItemComponent
+    CardItemComponent,
+    GithubCornerComponent
   ],
   imports: [
     BrowserModule,
