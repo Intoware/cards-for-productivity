@@ -4,9 +4,10 @@ import { SessionStateResponse } from './../../models/SessionStateResponse';
 import { UserModel } from './../../models/UserModel';
 import { SessionService } from 'src/app/services/session.service';
 import { HostedSession } from './../../models/HostedSession';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { JoinedSession } from 'src/app/models/JoinedSession';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-lobby',
@@ -23,6 +24,7 @@ export class LobbyComponent implements OnInit {
   sessionId: string;
 
   users: UserModel[] = [];
+  selectedUser: UserModel;
 
   isLoading: boolean;
 
@@ -30,7 +32,8 @@ export class LobbyComponent implements OnInit {
   hubListeners: HubListener[] = [];
 
   constructor(private router: Router,
-              private sessionService: SessionService) { }
+              private sessionService: SessionService,
+              private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.hostedSession = this.sessionService.getHostVariables();
@@ -60,6 +63,16 @@ export class LobbyComponent implements OnInit {
     this.sessionHubConnection.invoke('StartSession', this.sessionId, this.hostedSession.hostCode).then(null, err => {
       console.error(`[SessionHub] Error starting session: ${err}`);
     });
+  }
+
+  kickUser(user: UserModel) {
+    this.sessionHubConnection.invoke('KickUser', this.sessionId, this.hostedSession.hostCode, user.userId).then(null, err => {
+      console.error(`[SessionHub] Error kicking user: ${err}`);
+    });
+  }
+
+  displayDialog(template: TemplateRef<any>) {
+    this.dialog.open(template);
   }
 
   private setSessionInformation(sessionId: string, sessionCode: string) {
@@ -121,6 +134,16 @@ export class LobbyComponent implements OnInit {
     this.navigateTo('session');
   }
 
+  private userKicked(user: UserModel) {
+    this.userLeft(user);
+
+    if (!this.hostedSession && user.userId === this.joinedSession.userId) {
+      this.sessionService.resetSession();
+      this.sessionHubConnection.stop();
+      this.navigateTo('');
+    }
+  }
+
   private navigateTo(path: string) {
     this.unregisterListeners();
     this.router.navigate([path]);
@@ -132,6 +155,7 @@ export class LobbyComponent implements OnInit {
     this.hubListeners.push({ name: 'UserConnected', newMethod: (user) => { this.userConnected(user); } });
     this.hubListeners.push({ name: 'UserLeft', newMethod: (user) => { this.userLeft(user); } });
     this.hubListeners.push({ name: 'UserDisconnected', newMethod: (user) => { this.userDisconnected(user); } });
+    this.hubListeners.push({ name: 'UserKicked', newMethod: (user) => { this.userKicked(user); } });
 
     for (const listener of this.hubListeners) {
       this.sessionHubConnection.on(listener.name, listener.newMethod);

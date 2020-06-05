@@ -32,30 +32,11 @@ namespace CardsForProductivity.API.Hubs
             user.ConnectionId = null;
 
             await Clients.Group(user.SessionId).SendAsync("UserDisconnected", user);
-            
+
             await base.OnDisconnectedAsync(e);
         }
 
-        [HubMethodName("Subscribe")]
-        public async Task SubscribeAsync(ClientRequestDetails clientRequestDetails)
-        {
-            if (!await _sessionProvider.CheckSessionForClientAsync(clientRequestDetails, default))
-            {
-                return;
-            }
-
-            await AddToGroupAsync(clientRequestDetails.SessionId);
-
-            await _userRepo.SetConnectionIdAsync(clientRequestDetails.UserId, Context.ConnectionId, default);
-
-            var user = await _userRepo.GetUserByIdAsync(clientRequestDetails.UserId, default);
-
-            await Clients.GroupExcept(clientRequestDetails.SessionId, Context.ConnectionId).SendAsync("UserConnected", user);
-
-            var users = await _userRepo.GetUsersBySessionIdAsync(clientRequestDetails.SessionId, default);
-            await Clients.Caller.SendAsync("UserList", users);
-        }
-
+        #region Host Methods
         [HubMethodName("StartSession")]
         public async Task StartSessionAsync(string sessionId, string hostCode)
         {
@@ -110,6 +91,55 @@ namespace CardsForProductivity.API.Hubs
             await Clients.Group(sessionId).SendAsync("EndSession", sessionId);
         }
 
+        [HubMethodName("KickUser")]
+        public async Task KickUserAsync(string sessionId, string hostCode, string userId)
+        {
+            if (!await _sessionProvider.CheckSessionForHostAsync(sessionId, hostCode, default))
+            {
+                return;
+            }
+
+            var user = await _userRepo.GetUserByIdAsync(userId, default);
+
+            if (user == null)
+            {
+                return;
+            }
+
+            var hostUser = await _userRepo.GetUserByConnectionIdAsync(Context.ConnectionId, default);
+
+            if (hostUser.UserId == userId)
+            {
+                return;
+            }
+
+            await _userRepo.DeleteUserByIdAsync(userId, default);
+
+            await Clients.Group(sessionId).SendAsync("UserKicked", user);
+        }
+        #endregion
+
+        #region Client Methods
+        [HubMethodName("Subscribe")]
+        public async Task SubscribeAsync(ClientRequestDetails clientRequestDetails)
+        {
+            if (!await _sessionProvider.CheckSessionForClientAsync(clientRequestDetails, default))
+            {
+                return;
+            }
+
+            await AddToGroupAsync(clientRequestDetails.SessionId);
+
+            await _userRepo.SetConnectionIdAsync(clientRequestDetails.UserId, Context.ConnectionId, default);
+
+            var user = await _userRepo.GetUserByIdAsync(clientRequestDetails.UserId, default);
+
+            await Clients.GroupExcept(clientRequestDetails.SessionId, Context.ConnectionId).SendAsync("UserConnected", user);
+
+            var users = await _userRepo.GetUsersBySessionIdAsync(clientRequestDetails.SessionId, default);
+            await Clients.Caller.SendAsync("UserList", users);
+        }
+
         [HubMethodName("GetSessionState")]
         public async Task GetSessionStateAsync(ClientRequestDetails clientRequestDetails)
         {
@@ -148,17 +178,18 @@ namespace CardsForProductivity.API.Hubs
             }
 
             var session = await _sessionProvider.GetSessionByIdAsync(clientRequestDetails.SessionId, default);
-            
-            await _storyRepo.UpdateUserPointSelectionForStoryAsync( 
-                session.CurrentStoryId, 
-                clientRequestDetails.UserId, 
-                points, 
+
+            await _storyRepo.UpdateUserPointSelectionForStoryAsync(
+                session.CurrentStoryId,
+                clientRequestDetails.UserId,
+                points,
                 default);
 
             var story = await _storyRepo.GetStoryByIdAsync(session.CurrentStoryId, default);
 
             await Clients.Group(session.SessionId).SendAsync("MakePointSelection", story);
         }
+        #endregion
 
         Task AddToGroupAsync(string sessionId)
         {

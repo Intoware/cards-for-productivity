@@ -66,6 +66,15 @@ namespace CardsForProductivity.API.Repositories
             return (await _userCollection.DeleteManyAsync(filter, cancellationToken)).DeletedCount > 1;
         }
 
+        public async Task<bool> DeleteUserByIdAsync(string userId, CancellationToken cancellationToken)
+        {
+            _ = userId ?? throw new ArgumentNullException(nameof(userId));
+
+            var filter = Builders<UserModel>.Filter.Eq(i => i.UserId, userId);
+
+            return (await _userCollection.DeleteOneAsync(filter, cancellationToken)).DeletedCount == 1;
+        }
+
         public Task SetConnectionIdAsync(string userId, string connectionId, CancellationToken cancellationToken)
         {
             _ = userId ?? throw new ArgumentNullException(nameof(userId));

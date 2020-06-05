@@ -19,7 +19,7 @@
 
     <div class="content">
         <li class="unmarked">
-            <ul *ngFor="let user of users">
+            <ul *ngFor="let user of users" [class.is-host]="hostedSession && user.userId !== hostedSession.userId" (click)="selectedUser = user; displayDialog(kickUserDialog);">
                 {{user.nickname}}
                 <span *ngIf="user.isHost">&nbsp;(host)</span>
                 <span *ngIf="!user.isOnline">&nbsp;<i class="fas fa-exclamation-triangle"></i></span>
@@ -31,3 +31,18 @@
         Designed by <a href="https://www.instagram.com/yxlydesign" target="_blank">Tom Yaxley</a>. Developed by <a href="https://www.henry-bettany.com" target="_blank">Henry Bettany</a>. Powered by <a href="https://www.intoware.com" target="_blank">Intoware</a>.
     </div>
 </div>
+
+<ng-template #kickUserDialog>
+    <h1 mat-dialog-title>Are you sure?</h1>
+    <mat-dialog-content>
+        Are you sure that you want to kick {{selectedUser.nickname}}?
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button matRipple type="button" class="cfp-btn cfp-btn-secondary mr-2" [mat-dialog-close]="true">
+            <span>No</span>
+        </button>
+        <button matRipple type="button" class="cfp-btn" [mat-dialog-close]="true" (click)="kickUser(selectedUser)">
+            <span>Yes</span>
+        </button>
+    </mat-dialog-actions>
+</ng-template>

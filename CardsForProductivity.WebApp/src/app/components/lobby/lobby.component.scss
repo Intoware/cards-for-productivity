@@ -68,6 +68,12 @@
 
         >ul {
             padding: 0;
+
+            &.is-host:hover {
+                cursor: pointer;
+            
+                text-decoration: line-through;
+            }
         }
     }
 }

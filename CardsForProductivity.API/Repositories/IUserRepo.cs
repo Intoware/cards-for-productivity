@@ -17,6 +17,8 @@ namespace CardsForProductivity.API.Repositories
 
         Task<bool> DeleteUsersBySessionIdAsync(string sessionId, CancellationToken cancellationToken);
 
+        Task<bool> DeleteUserByIdAsync(string userId, CancellationToken cancellationToken);
+
         Task SetConnectionIdAsync(string userId, string connectionId, CancellationToken cancellationToken);
 
         Task<UserModel> GetUserByConnectionIdAsync(string connectionId, CancellationToken cancellationToken);
