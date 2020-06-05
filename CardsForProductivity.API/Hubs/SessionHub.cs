@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CardsForProductivity.API.Helpers;
 using CardsForProductivity.API.Models.Api;
 using CardsForProductivity.API.Providers;
 using CardsForProductivity.API.Repositories;
@@ -10,6 +8,9 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace CardsForProductivity.API.Hubs
 {
+    /// <summary>
+    /// Session hub.
+    /// </summary>
     public class SessionHub : Hub
     {
         readonly ISessionProvider _sessionProvider;
@@ -37,6 +38,11 @@ namespace CardsForProductivity.API.Hubs
         }
 
         #region Host Methods
+        /// <summary>
+        /// Starts the session.
+        /// </summary>
+        /// <param name="sessionId">ID of the session.</param>
+        /// <param name="hostCode">Authentication code for the host.</param>
         [HubMethodName("StartSession")]
         public async Task StartSessionAsync(string sessionId, string hostCode)
         {
@@ -50,6 +56,12 @@ namespace CardsForProductivity.API.Hubs
             await Clients.Group(sessionId).SendAsync("StartSession", sessionId);
         }
 
+        /// <summary>
+        /// Changes the current story.
+        /// </summary>
+        /// <param name="sessionId">ID of the session.</param>
+        /// <param name="hostCode">Authentication code for the host.</param>
+        /// <param name="storyID">ID of the story to change to.</param>
         [HubMethodName("CurrentStoryChanged")]
         public async Task SendCurrentStoryChangedMessageAsync(string sessionId, string hostCode, string storyId)
         {
@@ -63,6 +75,11 @@ namespace CardsForProductivity.API.Hubs
             await Clients.Group(sessionId).SendAsync("CurrentStoryChanged", storyId);
         }
 
+        /// <summary>
+        /// Reveals the current story.
+        /// </summary>
+        /// <param name="sessionId">ID of the session.</param>
+        /// <param name="hostCode">Authentication code for the host.</param>
         [HubMethodName("RevealCurrentStory")]
         public async Task RevealCurrentStoryAsync(string sessionId, string hostCode)
         {
@@ -80,6 +97,11 @@ namespace CardsForProductivity.API.Hubs
             await Clients.Group(sessionId).SendAsync("RevealCurrentStory", sessionId);
         }
 
+        /// <summary>
+        /// Ends the session.
+        /// </summary>
+        /// <param name="sessionId">ID of the session.</param>
+        /// <param name="hostCode">Authentication code for the host.</param>
         [HubMethodName("EndSession")]
         public async Task EndSessionAsync(string sessionId, string hostCode)
         {
@@ -91,6 +113,12 @@ namespace CardsForProductivity.API.Hubs
             await Clients.Group(sessionId).SendAsync("EndSession", sessionId);
         }
 
+        /// <summary>
+        /// Kicks a user from the session.
+        /// </summary>
+        /// <param name="sessionId">ID of the session.</param>
+        /// <param name="hostCode">Authentication code for the host.</param>
+        /// <param name="userId">ID of the user to kick.</param>
         [HubMethodName("KickUser")]
         public async Task KickUserAsync(string sessionId, string hostCode, string userId)
         {
@@ -120,6 +148,10 @@ namespace CardsForProductivity.API.Hubs
         #endregion
 
         #region Client Methods
+        /// <summary>
+        /// Subscribes a client to the session's group.
+        /// </summary>
+        /// <param name="clientRequestDetails">Client request details.</param>
         [HubMethodName("Subscribe")]
         public async Task SubscribeAsync(ClientRequestDetails clientRequestDetails)
         {
@@ -140,6 +172,10 @@ namespace CardsForProductivity.API.Hubs
             await Clients.Caller.SendAsync("UserList", users);
         }
 
+        /// <summary>
+        /// Gets the current state of the session.
+        /// </summary>
+        /// <param name="clientRequestDetails">Client request details.</param>
         [HubMethodName("GetSessionState")]
         public async Task GetSessionStateAsync(ClientRequestDetails clientRequestDetails)
         {
@@ -169,6 +205,11 @@ namespace CardsForProductivity.API.Hubs
             await Clients.Caller.SendAsync("GetSessionState", sessionState);
         }
 
+        /// <summary>
+        /// Makes a point selection for the user for the current round.
+        /// </summary>
+        /// <param name="clientRequestDetails">Client request details.</param>
+        /// <param name="points">Points to assign to the current story.</param>
         [HubMethodName("MakePointSelection")]
         public async Task MakePointSelectionForCurrentStoryAsync(ClientRequestDetails clientRequestDetails, string points)
         {

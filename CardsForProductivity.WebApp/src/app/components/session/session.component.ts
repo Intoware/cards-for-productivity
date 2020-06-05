@@ -8,6 +8,7 @@ import { HubConnectionState } from '@microsoft/signalr';
 import { UserModel } from 'src/app/models/UserModel';
 import { HubListener } from 'src/app/models/HubListener';
 import { StorySummaryModel } from 'src/app/models/StorySummaryModel';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-session',
@@ -44,7 +45,8 @@ export class SessionComponent implements OnInit {
   currentStory: StoryModel;
 
   constructor(private router: Router,
-              private sessionService: SessionService) {
+              private sessionService: SessionService,
+              private snackbar: MatSnackBar) {
     this.currentSession = this.sessionService.getCurrentSession();
 
     if (!this.currentSession) {
@@ -177,6 +179,7 @@ export class SessionComponent implements OnInit {
 
   private userLeft(user: UserModel) {
     console.log(`[SessionHub] UserLeft: ${user.nickname}`);
+    this.displaySnackbar(`${user.nickname} has left the session`);
     const removalIndex = this.currentSession.users.indexOf(user);
     this.currentSession.users.splice(removalIndex, 1);
     this.sessionService.setCurrentSessionUsers(this.currentSession.users);
@@ -228,6 +231,7 @@ export class SessionComponent implements OnInit {
   }
 
   private endSession() {
+    this.displaySnackbar('The host has ended the session');
     this.unregisterListeners();
     this.sessionHubConnection.stop();
     this.navigateTo('');
@@ -340,6 +344,12 @@ export class SessionComponent implements OnInit {
     this.sessionHubConnection.invoke('CurrentStoryChanged', this.currentSession.sessionId,
       this.hostedSession.hostCode, storyId).then(null, err => {
       console.error(`[SessionHub] Error changing current story: ${err}`);
+    });
+  }
+
+  private displaySnackbar(message: string) {
+    this.snackbar.open(message, 'Dismiss', {
+      duration: 5000
     });
   }
 }
