@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { SidebarItemComponent } from './components/sidebar-item/sidebar-item.component';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { LobbyComponent } from './components/lobby/lobby.component';
 import { SessionComponent } from './components/session/session.component';
 import { CardItemComponent } from './components/card-item/card-item.component';
@@ -38,7 +39,8 @@ import { GithubCornerComponent } from './components/github-corner/github-corner.
     HttpClientModule,
     FormsModule,
     MatRippleModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSnackBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -8,6 +8,7 @@ import { Component, OnInit, TemplateRef } from '@angular/core';
 import { JoinedSession } from 'src/app/models/JoinedSession';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-lobby',
@@ -33,7 +34,8 @@ export class LobbyComponent implements OnInit {
 
   constructor(private router: Router,
               private sessionService: SessionService,
-              private dialog: MatDialog) { }
+              private dialog: MatDialog,
+              private snackbar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.hostedSession = this.sessionService.getHostVariables();
@@ -138,6 +140,7 @@ export class LobbyComponent implements OnInit {
     this.userLeft(user);
 
     if (!this.hostedSession && user.userId === this.joinedSession.userId) {
+      this.displaySnackbar('You have been kicked from the session');
       this.sessionService.resetSession();
       this.sessionHubConnection.stop();
       this.navigateTo('');
@@ -166,6 +169,12 @@ export class LobbyComponent implements OnInit {
     for (const listener of this.hubListeners) {
       this.sessionHubConnection.off(listener.name, listener.newMethod);
     }
+  }
+
+  private displaySnackbar(message: string) {
+    this.snackbar.open(message, 'Dismiss', {
+      duration: 5000
+    });
   }
 
 }
