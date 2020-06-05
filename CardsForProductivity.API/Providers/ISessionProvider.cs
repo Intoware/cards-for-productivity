@@ -87,6 +87,14 @@ namespace CardsForProductivity.API.Providers
         Task StartSessionAsync(string sessionId, string hostCode, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Ends a session.
+        /// </summary>
+        /// <param name="sessionId">Session ID.</param>
+        /// <param name="hostCode">Host code.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>    
+        Task EndSessionAsync(string sessionId, string hostCode, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Changes the current story for a session.
         /// </summary>
         /// <param name="sessionId">Session ID.</param>

@@ -110,6 +110,8 @@ namespace CardsForProductivity.API.Hubs
                 return;
             }
 
+            await _sessionProvider.EndSessionAsync(sessionId, hostCode, default);
+
             await Clients.Group(sessionId).SendAsync("EndSession", sessionId);
         }
 

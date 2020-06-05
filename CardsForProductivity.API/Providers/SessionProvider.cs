@@ -219,6 +219,16 @@ namespace CardsForProductivity.API.Providers
             await _sessionRepo.SetSessionStartedAsync(sessionId, cancellationToken);
         }
 
+        public async Task EndSessionAsync(string sessionId, string hostCode, CancellationToken cancellationToken)
+        {
+            if (!await CheckSessionForHostAsync(sessionId, hostCode, cancellationToken))
+            {
+                return;
+            }
+
+            await _sessionRepo.SetSessionFinishedAsync(sessionId, cancellationToken);
+        }
+
         public async Task ChangeCurrentStoryAsync(string sessionId, string hostCode, string storyId, CancellationToken cancellationToken)
         {
             if (!await CheckSessionForHostAsync(sessionId, hostCode, cancellationToken))

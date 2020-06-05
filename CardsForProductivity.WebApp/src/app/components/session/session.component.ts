@@ -44,6 +44,9 @@ export class SessionComponent implements OnInit {
 
   currentStory: StoryModel;
 
+  summaryTableDataSource: StorySummaryModel[];
+  summaryTableDisplayedColumns: string[] = ['position', 'title', 'minimum', 'average', 'maximum'];
+
   constructor(private router: Router,
               private sessionService: SessionService,
               private snackbar: MatSnackBar) {
@@ -52,10 +55,18 @@ export class SessionComponent implements OnInit {
     if (!this.currentSession) {
       this.navigateTo('');
     }
+
+    if (this.currentSession.hasFinished) {
+      this.endSession();
+    }
   }
 
   ngOnInit(): void {
-    this.initializeSession();
+    if (!this.currentSession.hasFinished) {
+      this.initializeSession();
+    } else {
+      this.loadedSession = true;
+    }
   }
 
   pointsSelected(points: string) {
@@ -73,9 +84,12 @@ export class SessionComponent implements OnInit {
   }
 
   leaveSession() {
-    this.sessionHubConnection.stop();
+    if (this.sessionHubConnection) {
+      this.sessionHubConnection.stop();
+      this.unregisterListeners();
+    }
+
     this.sessionService.resetSession();
-    this.unregisterListeners();
     this.navigateTo('');
   }
 
@@ -111,11 +125,12 @@ export class SessionComponent implements OnInit {
     }
   }
 
-  getSummary(): StorySummaryModel {
+  getSummary(story: StoryModel): StorySummaryModel {
     return {
-      minimum: this.getMinimumSelection(),
-      average: this.getAverageSelection(),
-      maximum: this.getMaximumSelection()
+      title: story.title,
+      minimum: this.getMinimumSelection(story),
+      average: this.getAverageSelection(story),
+      maximum: this.getMaximumSelection(story)
     };
   }
 
@@ -206,6 +221,10 @@ export class SessionComponent implements OnInit {
       this.hostedSession = this.sessionService.getHostVariables();
     }
 
+    if (this.currentSession.hasFinished) {
+      this.endSession();
+    }
+
     this.loadedSession = true;
   }
 
@@ -231,10 +250,20 @@ export class SessionComponent implements OnInit {
   }
 
   private endSession() {
-    this.displaySnackbar('The host has ended the session');
-    this.unregisterListeners();
-    this.sessionHubConnection.stop();
-    this.navigateTo('');
+    this.summaryTableDataSource = [];
+    for (let i = 0; i < this.currentSession.stories.length; i++) {
+      const story = this.currentSession.stories[i];
+      if (story) {
+        this.summaryTableDataSource[i] = this.getSummary(story);
+        this.summaryTableDataSource[i].position = i + 1;
+      }
+    }
+
+    if (this.sessionHubConnection) {
+      this.unregisterListeners();
+      this.sessionHubConnection.stop();
+      this.currentSession.hasFinished = true;
+    }
   }
 
   private registerListeners() {
@@ -259,13 +288,12 @@ export class SessionComponent implements OnInit {
     }
   }
 
-  private getMinimumSelection(): string {
+  private getMinimumSelection(story: StoryModel): string {
     let lowestIndex = -1;
-    const currentStory = this.currentStory;
 
-    for (const key in currentStory.userPoints) {
+    for (const key in story.userPoints) {
       if (key) {
-        const selection = currentStory.userPoints[key];
+        const selection = story.userPoints[key];
         const indexInChoices = this.currentSession.pointChoices.indexOf(selection);
 
         if (lowestIndex === -1 || lowestIndex > indexInChoices) {
@@ -277,17 +305,15 @@ export class SessionComponent implements OnInit {
     return this.currentSession.pointChoices[lowestIndex];
   }
 
-  private getAverageSelection(): string {
+  private getAverageSelection(story: StoryModel): string {
     const selectionRecord = { } as Record<string, number>;
-
-    const currentStory = this.currentStory;
 
     let maxNumberOfOccurrences = -1;
     let pointsWithHighestOccurrences = [];
 
-    for (const key in currentStory.userPoints) {
+    for (const key in story.userPoints) {
       if (key) {
-        const selection = currentStory.userPoints[key];
+        const selection = story.userPoints[key];
         const currentRecord = selectionRecord[selection];
 
         if (currentRecord) {
@@ -322,13 +348,12 @@ export class SessionComponent implements OnInit {
     return sortedPoints.join(', ');
   }
 
-  private getMaximumSelection(): string {
+  private getMaximumSelection(story: StoryModel): string {
     let highestIndex = -1;
-    const currentStory = this.currentStory;
 
-    for (const key in currentStory.userPoints) {
+    for (const key in story.userPoints) {
       if (key) {
-        const selection = currentStory.userPoints[key];
+        const selection = story.userPoints[key];
         const indexInChoices = this.currentSession.pointChoices.indexOf(selection);
 
         if (highestIndex === -1 || highestIndex < indexInChoices) {

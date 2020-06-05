@@ -56,6 +56,8 @@
 }
 
 .content {
+    grid-area: content;
+
     padding: $large-spacing;
 
     color: $light-color;
