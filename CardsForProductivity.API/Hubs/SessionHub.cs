@@ -131,7 +131,7 @@ namespace CardsForProductivity.API.Hubs
 
             var user = await _userRepo.GetUserByIdAsync(userId, default);
 
-            if (user == null)
+            if (user is null)
             {
                 return;
             }

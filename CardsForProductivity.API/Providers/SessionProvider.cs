@@ -98,7 +98,7 @@ namespace CardsForProductivity.API.Providers
 
             var session = await _sessionRepo.GetSessionByIdAsync(sessionId, cancellationToken);
 
-            if (joinSessionRequest.UserId == null)
+            if (joinSessionRequest.UserId is null)
             {
                 var user = new UserModel
                 {
@@ -142,7 +142,7 @@ namespace CardsForProductivity.API.Providers
 
         public Task<UserModel> GetUserByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            if (userId == null)
+            if (userId is null)
             {
                 return null;
             }
@@ -159,7 +159,7 @@ namespace CardsForProductivity.API.Providers
 
             var session = await GetSessionByIdAsync(clientRequestDetails.SessionId, cancellationToken);
 
-            if (session == null)
+            if (session is null)
             {
                 return false;
             }
@@ -171,7 +171,7 @@ namespace CardsForProductivity.API.Providers
 
             var user = await _userRepo.GetUserByIdAsync(clientRequestDetails.UserId, cancellationToken);
 
-            if (user == null)
+            if (user is null)
             {
                 return false;
             }
@@ -193,7 +193,7 @@ namespace CardsForProductivity.API.Providers
 
             var session = await GetSessionByIdAsync(sessionId, cancellationToken);
 
-            if (session == null)
+            if (session is null)
             {
                 return false;
             }
