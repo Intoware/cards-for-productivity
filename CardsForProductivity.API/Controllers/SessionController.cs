@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using CardsForProductivity.API.Models.Api;
 using CardsForProductivity.API.Providers;
 using CardsForProductivity.API.Models.Data;
@@ -14,13 +13,10 @@ namespace CardsForProductivity.API.Controllers
     [Route("api/[controller]")]
     public class SessionController : ControllerBase
     {
-        readonly ILogger<SessionController> _logger;
         readonly ISessionProvider _sessionProvider;
 
-        public SessionController(ILogger<SessionController> logger,
-            ISessionProvider sessionProvider)
+        public SessionController(ISessionProvider sessionProvider)
         {
-            _logger = logger;
             _sessionProvider = sessionProvider;
         }
 
@@ -33,16 +29,11 @@ namespace CardsForProductivity.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> JoinSessionAsync([FromBody] JoinSessionRequest joinSessionRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> JoinSessionAsync(JoinSessionRequest joinSessionRequest, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var session = await _sessionProvider.GetSessionBySessionCodeAsync(joinSessionRequest.SessionCode, cancellationToken);
 
-            if (session == null)
+            if (session is null)
             {
                 return NotFound();
             }
@@ -67,13 +58,8 @@ namespace CardsForProductivity.API.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateSessionAsync([FromBody] CreateSessionRequest createSessionRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateSessionAsync(CreateSessionRequest createSessionRequest, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             if (!string.IsNullOrEmpty(createSessionRequest.HostCode) && !string.IsNullOrEmpty(createSessionRequest.SessionId))
             {
                 var session = await _sessionProvider.GetSessionByIdAsync(createSessionRequest.SessionId, cancellationToken);
@@ -102,7 +88,7 @@ namespace CardsForProductivity.API.Controllers
 
                 var user = string.IsNullOrEmpty(userId) ? null : await _sessionProvider.GetUserByIdAsync(userId, cancellationToken);
 
-                if (user == null || user.RejoinCode != rejoinCode)
+                if (user is null || user.RejoinCode != rejoinCode)
                 {
                     return Conflict();
                 }
