@@ -6,6 +6,7 @@ export interface StoryModel {
     points?: string;
     isSelected?: boolean;
     isDuplicate?: boolean;
+    isDeleted?: boolean;
     userPoints?: Record<string, string>;
     revealed?: boolean;
 }

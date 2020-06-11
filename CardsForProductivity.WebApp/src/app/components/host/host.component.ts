@@ -132,9 +132,9 @@ export class HostComponent implements OnInit {
     return valid;
   }
 
-  isTitleUnique(story: StoryModel, stories: StoryModel[], checkForNewStory: boolean): boolean {
+  private isTitleUnique(story: StoryModel, stories: StoryModel[], checkForNewStory: boolean): boolean {
     return stories.filter((s) => {
-      return s.title === story.title;
+      return s.title.trim() === story.title.trim();
     }).length === (checkForNewStory ? 0 : 1);
   }
 

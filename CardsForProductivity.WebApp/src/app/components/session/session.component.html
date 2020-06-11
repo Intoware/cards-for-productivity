@@ -4,6 +4,11 @@
             <h3 class="mb-0">Cards For Productivity</h3>
 
             <div *ngIf="this.currentSession.isHost">
+                <button matRipple *ngIf="loadedSession" type="button" class="cfp-btn cfp-btn-outline mr-4"
+                    (click)="editStories(manageStoriesDialog)">
+                    <span>Manage Stories</span>
+                </button>
+
                 <button matRipple *ngIf="loadedSession" type="button" class="cfp-btn cfp-btn-outline mr-2"
                     (click)="previousStory()" [disabled]="currentStory.storyId === currentSession.stories[0].storyId">
                     <span>Previous</span>
@@ -149,3 +154,89 @@
             href="https://www.intoware.com" target="_blank">Intoware</a>.
     </div>
 </div>
+
+<ng-template #manageStoriesDialog>
+    <h1 mat-dialog-title>Manage Stories</h1>
+    <mat-dialog-content>
+        <div class="manage-story-items">
+            <div *ngFor="let story of editingStories">
+                <div matRipple class="manage-story-item" [class.deleted]="story.isDeleted">
+                    <div class="manage-story-item-error" *ngIf="!story.title.trim() || story.isDuplicate"
+                        (click)="storySelected(story, manageStoryDialog)">
+                        <i class="fas fa-exclamation-triangle warning"></i>
+                    </div>
+
+                    <div class="manage-story-item-content" (click)="storySelected(story, manageStoryDialog)">
+                        {{ story.title }}
+                    </div>
+
+                    <div class="manage-story-item-actions">
+                        <button matRipple type="button" (click)="cloneStory(story)"
+                            class="cfp-btn cfp-btn-icon cfp-btn-icon-white">
+                            <i class="fas fa-clone"></i>
+                        </button>
+
+                        <button matRipple type="button" (click)="story.isDeleted = !story.isDeleted"
+                            class="cfp-btn cfp-btn-icon cfp-btn-icon-white">
+                            <i *ngIf="!story.isDeleted" class="fas fa-trash-alt"></i>
+                            <i *ngIf="story.isDeleted" class="fas fa-trash-restore-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button matRipple type="button" class="cfp-btn cfp-btn-secondary mr-2" [mat-dialog-close]="true">
+            <span>Cancel</span>
+        </button>
+        <button matRipple type="button" class="cfp-btn cfp-btn-secondary mr-2"
+            (click)="addStoryClicked(manageStoryDialog)">
+            <span>Add Story</span>
+        </button>
+        <button matRipple type="button" class="cfp-btn" [mat-dialog-close]="true" (click)="saveChanges()"
+            [disabled]="!storyChangesValid()">
+            <span>Save Changes</span>
+        </button>
+    </mat-dialog-actions>
+</ng-template>
+
+<ng-template #manageStoryDialog>
+    <h1 mat-dialog-title>
+        <div *ngIf="!isEditingStory">Add Story</div>
+        <div *ngIf="isEditingStory">Edit Story</div>
+    </h1>
+    <mat-dialog-content>
+        <div *ngIf="!isEditingStory">
+            <mat-form-field class="w-100">
+                <mat-label>Insertion Mode</mat-label>
+                <mat-select [(value)]="insertionMode">
+                    <mat-option value="InsertAtTop">Insert at top</mat-option>
+                    <mat-optgroup label="Insert below...">
+                        <mat-option *ngFor="let story of editingStories" [value]="'S:' + story.title">
+                            {{story.title}}
+                        </mat-option>
+                    </mat-optgroup>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="manage-story-item-edit" *ngIf="editingStory">
+            <input type="text" maxlength="250" autofocus class="cfp-form-control rounded mb-2"
+                placeholder="Click to add the title of your story" aria-label="Story title"
+                [(ngModel)]="editingStory.title">
+
+            <input type="text" maxlength="1000" class="cfp-form-control rounded"
+                placeholder="Click to add the description of your story" aria-label="Story description"
+                [(ngModel)]="editingStory.description">
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button matRipple type="button" class="cfp-btn cfp-btn-secondary mr-2" [mat-dialog-close]="true">
+            <span>Cancel</span>
+        </button>
+        <button matRipple type="button" class="cfp-btn" [mat-dialog-close]="true" (click)="saveStory()"
+            [disabled]="!editingStory.title.trim()">
+            <span>Done</span>
+        </button>
+    </mat-dialog-actions>
+</ng-template>

@@ -2,13 +2,14 @@ import { HostedSession } from './../../models/HostedSession';
 import { StoryModel } from './../../models/StoryModel';
 import { SessionStateResponse } from './../../models/SessionStateResponse';
 import { SessionService } from 'src/app/services/session.service';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, TemplateRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { HubConnectionState } from '@microsoft/signalr';
 import { UserModel } from 'src/app/models/UserModel';
 import { HubListener } from 'src/app/models/HubListener';
 import { StorySummaryModel } from 'src/app/models/StorySummaryModel';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-session',
@@ -43,13 +44,18 @@ export class SessionComponent implements OnInit {
   selectedPointsForCurrentStory: string;
 
   currentStory: StoryModel;
+  editingStory: StoryModel;
+  editingStories: StoryModel[];
+  isEditingStory: boolean;
+  insertionMode = 'InsertAtTop';
 
   summaryTableDataSource: StorySummaryModel[];
   summaryTableDisplayedColumns: string[] = ['position', 'title', 'minimum', 'average', 'maximum'];
 
   constructor(private router: Router,
-              private sessionService: SessionService,
-              private snackbar: MatSnackBar) {
+    private sessionService: SessionService,
+    private dialog: MatDialog,
+    private snackbar: MatSnackBar) {
     this.currentSession = this.sessionService.getCurrentSession();
 
     if (!this.currentSession) {
@@ -79,8 +85,8 @@ export class SessionComponent implements OnInit {
 
     this.sessionHubConnection.invoke('MakePointSelection', this.sessionService.getClientRequestDetails(),
       this.selectedPointsForCurrentStory).then(null, err => {
-      console.error(`[SessionHub] Error making point selection: ${err}`);
-    });
+        console.error(`[SessionHub] Error making point selection: ${err}`);
+      });
   }
 
   leaveSession() {
@@ -140,6 +146,101 @@ export class SessionComponent implements OnInit {
     });
   }
 
+  displayDialog(template: TemplateRef<any>) {
+    this.dialog.open(template);
+  }
+
+  editStories(template: TemplateRef<any>) {
+    this.editingStories = JSON.parse(JSON.stringify(this.currentSession.stories));
+    this.dialog.open(template);
+  }
+
+  addStoryClicked(template: TemplateRef<any>) {
+    this.editingStory = { title: '', description: '' };
+    this.isEditingStory = false;
+    this.displayDialog(template);
+  }
+
+  deleteStory(story: StoryModel) {
+    if (story.isSelected) {
+      this.selectStory(this.editingStories[0]);
+    }
+
+    const removalIndex = this.editingStories.indexOf(story);
+    this.editingStories.splice(removalIndex, 1);
+
+    if (this.editingStories.length === 0) {
+      this.addStory({ title: '', description: '' });
+    }
+  }
+
+  cloneStory(story: StoryModel) {
+    const storyToAdd = Object.assign({}, story);
+    storyToAdd.title = !storyToAdd.title.trim() ? '' : `${storyToAdd.title} (copy)`;
+
+    if (storyToAdd.title.trim()) {
+      while (!this.isTitleUnique(storyToAdd, this.editingStories, true)) {
+        storyToAdd.title = `${storyToAdd.title} (copy)`;
+      }
+    }
+
+    this.editingStories[this.editingStories.length] = storyToAdd;
+    this.selectStory(storyToAdd);
+  }
+
+  storySelected(story: StoryModel, template: TemplateRef<any>) {
+    this.selectStory(story);
+    this.isEditingStory = true;
+    this.displayDialog(template);
+  }
+
+  saveStory() {
+    let index = -1;
+
+    if (!this.isEditingStory) {
+      switch (this.insertionMode) {
+        case 'InsertAtTop':
+          index = 0;
+          break;
+        default:
+          const storyToInsertBeneath = this.editingStories.filter((v) => v.title === this.insertionMode.replace('S:', ''))[0];
+          index = this.editingStories.indexOf(storyToInsertBeneath) + 1;
+      }
+
+      this.addStory(this.editingStory, index);
+    } else {
+      const storyToEdit = this.editingStories.filter((v) => v.storyId === this.editingStory.storyId)[0];
+      storyToEdit.title = this.editingStory.title;
+      storyToEdit.description = this.editingStory.description;
+    }
+  }
+
+  saveChanges() {
+    this.sessionHubConnection.invoke('UpdateStories', this.currentSession.sessionId,
+      this.hostedSession.hostCode, this.editingStories.filter((v) => !v.isDeleted)).then(null, err => {
+        console.error(`[SessionHub] Error updating stories: ${err}`);
+      });
+  }
+
+  storyChangesValid(): boolean {
+    let valid = true;
+
+    for (const story of this.editingStories) {
+      if (!this.isTitleUnique(story, this.editingStories, false)) {
+        story.isDuplicate = true;
+        valid = false;
+      } else {
+        story.isDuplicate = false;
+      }
+
+      if (!story.title.trim()) {
+        valid = false;
+      }
+    }
+
+    return valid;
+  }
+
   private navigateTo(path: string) {
     this.router.navigate([path]);
   }
@@ -164,9 +265,7 @@ export class SessionComponent implements OnInit {
     this.registerListeners();
 
     this.sessionHubConnection.invoke('Subscribe', this.sessionService.getClientRequestDetails()).then(() => {
-      this.sessionHubConnection.invoke('GetSessionState', this.sessionService.getClientRequestDetails()).then(null, err => {
-        console.error(`[SessionHub] Error getting session state: ${err}`);
-      });
+      this.getSessionState();
     }, err => {
       console.error(`[SessionHub] Error subscribing to SessionHub: ${err}`);
     });
@@ -206,7 +305,7 @@ export class SessionComponent implements OnInit {
     this.sessionService.setCurrentSessionUsers(this.currentSession.users);
   }
 
-  private getSessionState(state: SessionStateResponse) {
+  private gotSessionState(state: SessionStateResponse) {
     console.log(`[SessionHub] GetSessionState: ${state.sessionId}`);
     this.currentSession = state;
     this.sessionService.setCurrentSession(state);
@@ -267,7 +366,7 @@ export class SessionComponent implements OnInit {
   }
 
   private registerListeners() {
-    this.hubListeners.push({ name: 'GetSessionState', newMethod: (state) => { this.getSessionState(state); } });
+    this.hubListeners.push({ name: 'GetSessionState', newMethod: (state) => { this.gotSessionState(state); } });
     this.hubListeners.push({ name: 'UserList', newMethod: (users) => { this.userList(users); } });
     this.hubListeners.push({ name: 'UserConnected', newMethod: (user) => { this.userConnected(user); } });
     this.hubListeners.push({ name: 'UserLeft', newMethod: (user) => { this.userLeft(user); } });
@@ -276,6 +375,7 @@ export class SessionComponent implements OnInit {
     this.hubListeners.push({ name: 'RevealCurrentStory', newMethod: () => { this.revealCurrentStory(); } });
     this.hubListeners.push({ name: 'CurrentStoryChanged', newMethod: (storyId) => { this.currentStoryChanged(storyId); } });
     this.hubListeners.push({ name: 'EndSession', newMethod: () => { this.endSession(); } });
+    this.hubListeners.push({ name: 'StoriesUpdated', newMethod: () => { this.storiesUpdated(); } });
 
     for (const listener of this.hubListeners) {
       this.sessionHubConnection.on(listener.name, listener.newMethod);
@@ -306,7 +406,7 @@ export class SessionComponent implements OnInit {
   }
 
   private getAverageSelection(story: StoryModel): string {
-    const selectionRecord = { } as Record<string, number>;
+    const selectionRecord = {} as Record<string, number>;
 
     let maxNumberOfOccurrences = -1;
     let pointsWithHighestOccurrences = [];
@@ -368,13 +468,50 @@ export class SessionComponent implements OnInit {
   private setCurrentStory(storyId: string) {
     this.sessionHubConnection.invoke('CurrentStoryChanged', this.currentSession.sessionId,
       this.hostedSession.hostCode, storyId).then(null, err => {
-      console.error(`[SessionHub] Error changing current story: ${err}`);
-    });
+        console.error(`[SessionHub] Error changing current story: ${err}`);
+      });
   }
 
   private displaySnackbar(message: string) {
     this.snackbar.open(message, 'Dismiss', {
       duration: 5000
+    });
+  }
+
+  private storiesUpdated() {
+    this.getSessionState();
+    this.displaySnackbar('The host has updated the stories');
+  }
+
+  private addStory(story: StoryModel, index: number = -1) {
+    if (index === -1) {
+      index = this.editingStories.length;
+    }
+
+    this.editingStories.splice(index, 0, story);
+
+    this.selectStory(this.editingStories[this.editingStories.length - 1]);
+  }
+
+  private selectStory(story: StoryModel) {
+    for (const otherStory of this.editingStories) {
+      otherStory.isSelected = false;
+    }
+
+    story.isSelected = true;
+    this.editingStory = Object.assign({}, story);
+  }
+
+  private isTitleUnique(story: StoryModel, stories: StoryModel[], checkForNewStory: boolean): boolean {
+    return stories.filter((s) => {
+      return s.title.trim() === story.title.trim();
+    }).length === (checkForNewStory ? 0 : 1);
+  }
+
+  private getSessionState() {
+    this.loadedSession = false;
+    this.sessionHubConnection.invoke('GetSessionState', this.sessionService.getClientRequestDetails()).then(null, err => {
+      console.error(`[SessionHub] Error getting session state: ${err}`);
     });
   }
 }

@@ -42,6 +42,10 @@ $btn-action-amount: 4;
         justify-content: center;
     }
 
+    &.cfp-btn-icon-white {
+        color: $white-color;
+    }
+
     &.cfp-btn-outline {
         border: solid 1px $light-color;
     }

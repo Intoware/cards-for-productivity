@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CardsForProductivity.API.Models.Api;
+using CardsForProductivity.API.Models.Data;
 using CardsForProductivity.API.Providers;
 using CardsForProductivity.API.Repositories;
 using Microsoft.AspNetCore.SignalR;
@@ -66,6 +67,11 @@ namespace CardsForProductivity.API.Hubs
         public async Task SendCurrentStoryChangedMessageAsync(string sessionId, string hostCode, string storyId)
         {
             if (!await _sessionProvider.CheckSessionForHostAsync(sessionId, hostCode, default))
+            {
+                return;
+            }
+
+            if (storyId is null)
             {
                 return;
             }
@@ -147,6 +153,30 @@ namespace CardsForProductivity.API.Hubs
 
             await Clients.Group(sessionId).SendAsync("UserKicked", user);
         }
+
+        /// <summary>
+        /// Updates the stories in a session.
+        /// </summary>
+        /// <param name="sessionId">ID of the session.</param>
+        /// <param name="hostCode">Authentication code for the host.</param>
+        /// <param name="stories">Stories.</param>
+        [HubMethodName("UpdateStories")]
+        public async Task UpdateStoriesInSessionAsync(string sessionId, string hostCode, StoryModel[] stories)
+        {
+            if (!await _sessionProvider.CheckSessionForHostAsync(sessionId, hostCode, default))
+            {
+                return;
+            }
+
+            if (stories is null || stories.Length == 0 || stories.Any(i => string.IsNullOrWhiteSpace(i.Title)))
+            {
+                return;
+            }
+
+            await _storyRepo.UpdatesStoriesAsync(sessionId, stories, default);
+
+            await Clients.Group(sessionId).SendAsync("StoriesUpdated");
+        }
         #endregion
 
         #region Client Methods
@@ -196,7 +226,7 @@ namespace CardsForProductivity.API.Hubs
                 SessionCode = session.SessionCode,
                 UserId = clientRequestDetails.UserId,
                 IsHost = users.FirstOrDefault(i => i.UserId == clientRequestDetails.UserId)?.IsHost ?? false,
-                Stories = stories,
+                Stories = stories.OrderBy(i => i.StoryIndex),
                 Users = users,
                 PointChoices = session.PointChoices,
                 HasStarted = session.HasStarted,

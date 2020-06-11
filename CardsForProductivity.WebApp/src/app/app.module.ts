@@ -19,6 +19,7 @@ import { LobbyComponent } from './components/lobby/lobby.component';
 import { SessionComponent } from './components/session/session.component';
 import { CardItemComponent } from './components/card-item/card-item.component';
 import { GithubCornerComponent } from './components/github-corner/github-corner.component';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { GithubCornerComponent } from './components/github-corner/github-corner.
     MatRippleModule,
     MatDialogModule,
     MatSnackBarModule,
-    MatTableModule
+    MatTableModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

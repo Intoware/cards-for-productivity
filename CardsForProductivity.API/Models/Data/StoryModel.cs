@@ -48,5 +48,10 @@ namespace CardsForProductivity.API.Models.Data
         /// Whether the story has been revealed.
         /// </summary>
         public bool Revealed { get; set; }
+
+        /// <summary>
+        /// Index of the story.
+        /// </summary>
+        public int StoryIndex { get; set; }
     }
 }

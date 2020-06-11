@@ -56,5 +56,13 @@ namespace CardsForProductivity.API.Repositories
         /// <param name="storyId">Story ID.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         Task RevealStoryAsync(string storyId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the stories in a session.
+        /// </summary>
+        /// <param name="sessionId">Session ID.</param>
+        /// <param name="stories">Stories.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        Task UpdatesStoriesAsync(string sessionId, IEnumerable<StoryModel> stories, CancellationToken cancellationToken);
     }
 }

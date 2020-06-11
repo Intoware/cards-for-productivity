@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CardsForProductivity.API.Models.Data;
-using CardsForProductivity.API.Providers;
 using MongoDB.Driver;
 
 namespace CardsForProductivity.API.Repositories
@@ -76,6 +75,68 @@ namespace CardsForProductivity.API.Repositories
             var update = Builders<StoryModel>.Update.Set(i => i.Revealed, true);
 
             return _storyCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+        }
+
+        public async Task UpdatesStoriesAsync(string sessionId, IEnumerable<StoryModel> stories, CancellationToken cancellationToken)
+        {
+            _ = sessionId ?? throw new ArgumentNullException(nameof(sessionId));
+
+            if (stories is null || !stories.Any())
+            {
+                throw new ArgumentNullException(nameof(stories));
+            }
+
+            var i = 0;
+            foreach (var story in stories)
+            {
+                story.StoryIndex = i++;
+            }
+
+            var existingStories = await GetStoriesBySessionIdAsync(sessionId, cancellationToken);
+
+            var newStories = stories.Where(i => !existingStories.Any(j => j.StoryId == i.StoryId));
+
+            if (newStories.Any())
+            {
+                foreach (var story in newStories)
+                {
+                    story.SessionId = sessionId;
+                }
+                await _storyCollection.InsertManyAsync(newStories, cancellationToken: cancellationToken);
+            }
+
+            var filterBuilder = Builders<StoryModel>.Filter;
+
+            var storiesToUpdate = existingStories.Where(i => stories.Any(j => j.StoryId == i.StoryId));
+
+            foreach (var story in storiesToUpdate)
+            {
+                var filter = filterBuilder.And(
+                    filterBuilder.Eq(i => i.SessionId, sessionId),
+                    filterBuilder.Eq(i => i.StoryId, story.StoryId)
+                );
+
+                var updatedStory = stories.FirstOrDefault(i => i.StoryId == story.StoryId);
+
+                var update = Builders<StoryModel>.Update
+                    .Set(i => i.Title, updatedStory.Title)
+                    .Set(i => i.Description, updatedStory.Description)
+                    .Set(i => i.StoryIndex, updatedStory.StoryIndex);
+
+                await _storyCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+            }
+            
+            var deletedStories = existingStories.Where(i => !stories.Any(j => j.StoryId == i.StoryId));
+
+            foreach (var story in deletedStories)
+            {
+                var filter = filterBuilder.And(
+                    filterBuilder.Eq(i => i.SessionId, sessionId),
+                    filterBuilder.Eq(i => i.StoryId, story.StoryId)
+                );
+
+                await _storyCollection.DeleteOneAsync(filter, cancellationToken: cancellationToken);
+            }
         }
     }
 }

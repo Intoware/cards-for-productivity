@@ -159,7 +159,7 @@
 
     width: 55%;
 
-    @media only screen and (max-width: 100px) {
+    @media only screen and (max-width: 1000px) {
         width: 60%;
     }
 
@@ -279,4 +279,68 @@
     text-align: center;
 
     line-height: 2rem;
+}
+
+.manage-stories-dialog {
+    width: 80%;
+    height: 80%;
+}
+
+.manage-story-items {
+    max-height: 60vh;
+
+    overflow-y: scroll;
+}
+
+.manage-story-item {
+    background-color: $dark-color;
+
+    display: flex;
+    align-items: center;
+
+    font-weight: bolder;
+    font-size: $standard-font-size;
+    line-height: 1.2rem;
+    margin-bottom: $standard-spacing;
+
+    border-radius: $standard-border-radius;
+
+    width: 70vw;
+
+    color: $white-color;
+
+    &.deleted {
+        background-color: lighten($dark-color, 20%);
+    }
+}
+
+.manage-story-item-content {
+    padding: $standard-spacing;
+
+    cursor: pointer;
+
+    flex-grow: 1;
+}
+
+.manage-story-item-actions {
+    padding: $standard-spacing;
+
+    display: flex;
+}
+
+.manage-story-item-error {
+    padding: $standard-spacing 0 $standard-spacing $standard-spacing;
+
+    cursor: pointer;
+}
+
+.warning {
+    color: $warning-color;
+    font-size: 1rem;
+}
+
+.manage-story-item-edit {
+    >.cfp-form-control {
+        width: 60vw;
+    }
 }

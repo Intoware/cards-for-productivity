@@ -1,12 +1,6 @@
 @import "colors.scss";
 @import "dimensions.scss";
 
-.sidebar-item-card {
-    background-color: $dark-color;
-
-    cursor: pointer;
-}
-
 .grid-container {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -24,6 +18,8 @@
 
 .sidebar-item-card {
     grid-area: card;
+
+    cursor: pointer;
 
     background-color: $dark-color;
 

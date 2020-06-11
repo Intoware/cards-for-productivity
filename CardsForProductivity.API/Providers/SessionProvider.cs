@@ -60,9 +60,11 @@ namespace CardsForProductivity.API.Providers
 
             await _userRepo.InsertUserAsync(user, cancellationToken);
 
+            var i = 0;
             foreach (var story in createSessionRequest.Stories)
             {
                 story.SessionId = session.SessionId;
+                story.StoryIndex = i++;
             }
 
             await _storyRepo.InsertStoriesAsync(createSessionRequest.Stories, cancellationToken);
@@ -125,7 +127,7 @@ namespace CardsForProductivity.API.Providers
                 UserId = userId,
                 RejoinCode = rejoinCode,
                 AuthCode = authCode,
-                Stories = stories,
+                Stories = stories.OrderBy(i => i.StoryIndex),
                 Users = users,
                 PointChoices = session.PointChoices,
                 HasStarted = session.HasStarted,
